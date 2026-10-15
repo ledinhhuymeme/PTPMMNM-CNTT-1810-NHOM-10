@@ -1,11 +1,12 @@
-# PHÁT TRIỂN PHẦN MỀM MÃ NGUỒN MỞ
+<div align="center">
 
-## NHÓM 10 - CNTT 1810
+### 🎓 [Trường Đại học Đại Nam — Khoa Công nghệ Thông tin](https://dainam.edu.vn)
 
-**Trường:** Đại học Đại Nam  
-**Khoa:** Công nghệ Thông tin  
-**Học phần:** Phát triển phần mềm mã nguồn mở  
-**Đề tài BTL:** Đề tài 10: Xây dựng hệ thống quản lý kho, điều chuyển hàng và kiểm kê tại nhiều điểm  
+## BÀI THỰC HÀNH PHÁT TRIỂN PHẦN MỀM MÃ NGUỒN MỞ (PTPMMNM)
+
+<img src="assets/logo-header.png" alt="DNU AIoT Lab - Khoa CNTT - Đại học Đại Nam" width="480">
+
+</div>
 
 ---
 
