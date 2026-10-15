@@ -1,17 +1,17 @@
-# LAB 03 — HIỂN THỊ SỰ KIỆN, TÌM KIẾM VÀ XỬ LÝ FORM
+# LAB 04 — QUẢN LÝ BẢN NHÁP BẰNG SESSION VÀ COOKIE
 
 Học phần: Phát triển phần mềm mã nguồn mở. Đối tượng: sinh viên năm 3, chuyên ngành Phát triển phần mềm. Bài thực hành sử dụng mã nguồn CommunityPass được cấp trong thư mục Ma\_nguon.
 
 ## I. MỤC TIÊU VÀ CHUẨN BỊ
 
-Nội dung bài giảng: Chương 3, slide 9–15: mảng; 16–20: Form, chuyển hướng, GET/POST; 21–22: include/require. Số trang tính cả trang bìa. Git và kiểm thử được sử dụng để hỗ trợ thực hành.
+Nội dung bài giảng: Chương 3, slide 23–31: Session, Cookie, khởi tạo, đọc, cập nhật và xóa. Số trang tính cả trang bìa. Git và kiểm thử được sử dụng để hỗ trợ thực hành.
 
 Sau khi hoàn thành bài thực hành, sinh viên có khả năng:
 
-- Duyệt mảng kết hợp và tách dữ liệu, hàm xử lý, giao diện.
-- Giải thích GET/POST, nhận dữ liệu và kiểm tra ở máy chủ.
-- Xử lý ký tự đặc biệt khi hiển thị HTML; phân biệt kết quả xem trước với dữ liệu đã lưu.
-- Hoàn thiện bộ lọc kết hợp và giao diện nhận điều kiện; xử lý Form đúng với dữ liệu hợp lệ và không hợp lệ.
+- Phân biệt dữ liệu Session ở phía máy chủ và tùy chọn Cookie phía trình duyệt.
+- Xây luồng nhập, xác nhận, sửa, hủy và hoàn tất mô phỏng.
+- Kiểm tra nháp vắng mặt, hết hạn và hai phiên độc lập.
+- Hoàn thiện kiểm tra bản nháp, thời hạn và các thao tác sửa, hủy, xác nhận trong một phiên sử dụng.
 
 Chuẩn bị: đọc nội dung bài giảng được nêu trên, giải nén trọn thư mục của lab và mở Ma\_nguon trong trình soạn thảo. Bài đã có đủ mã và dữ liệu khởi đầu; chỉ sửa những tệp được chỉ rõ trong phần hướng dẫn và bài tự làm.
 
@@ -30,30 +30,30 @@ Các lệnh Bash chạy trong terminal Ubuntu, không chạy trong PowerShell. B
 
 ### Bối cảnh và nội dung thực hành
 
-Bài thực hành xây trang danh sách sự kiện, tìm kiếm theo từ khóa và Form đăng ký. Dữ liệu sự kiện được nạp từ mảng PHP; kết quả đăng ký là bản xem trước và chưa lưu vào cơ sở dữ liệu.
+Khi đăng ký sự kiện, người dùng cần xem lại thông tin trước khi xác nhận và có thể quay lại để chỉnh sửa. Dữ liệu trong biến PHP của yêu cầu trước không tự được giữ cho yêu cầu tiếp theo. Bài này sử dụng Session để lưu bản nháp trên máy chủ và Cookie để ghi nhớ tùy chọn hiển thị.
 
-![Danh sách sự kiện của mã mẫu](Hinh_anh/hinh_01.png)
+Bước hoàn tất trong bài chỉ ghi nhận kết quả mô phỏng trong Session; chưa lưu đăng ký vào cơ sở dữ liệu hoặc phát hành vé. Phần lưu CSDL không thuộc phạm vi bài thực hành Session này.
 
-*Danh sách sự kiện của mã mẫu*
+![Màn hình xác nhận của mã mẫu](Hinh_anh/hinh_01.png)
 
-Sau khi nhập php, trang chỉ còn PHP Open Day. Khi gửi họ tên và email hợp lệ, trang hiển thị nội dung đã nhận. Đây là bản xem trước, không phải đăng ký đã được lưu.
+*Màn hình xác nhận của mã mẫu*
 
 ## II. QUY TRÌNH THỰC HÀNH
 
-![Sơ đồ hướng thực hiện Lab 03](Hinh_anh/hinh_02.png)
+![Sơ đồ hướng thực hiện Lab 04](Hinh_anh/hinh_02.png)
 
-*Sơ đồ hướng thực hiện Lab 03*
+*Sơ đồ hướng thực hiện Lab 04*
 
 Sơ đồ thể hiện thứ tự thực hiện và các bước kiểm tra. Tại nút quyết định hình thoi, đối chiếu kết quả với yêu cầu; nếu chưa đạt, quay lại bước xử lý tương ứng trước khi tiếp tục.
 
-Mở thư mục Lab03/Ma\_nguon bằng trình soạn thảo và mở terminal Ubuntu tại thư mục này. Chạy pwd và ls để kiểm tra vị trí; danh sách tệp cần có lab.sh. Các đường dẫn trong bài được tính từ Ma\_nguon. Trên Windows, thực hiện lệnh Bash trong Ubuntu/WSL.
+Mở thư mục Lab04/Ma\_nguon bằng trình soạn thảo và mở terminal Ubuntu tại thư mục này. Chạy pwd và ls để kiểm tra vị trí; danh sách tệp cần có lab.sh. Các đường dẫn trong bài được tính từ Ma\_nguon. Trên Windows, thực hiện lệnh Bash trong Ubuntu/WSL.
 
 ```bash
 bash lab.sh check
 bash lab.sh run
 ```
 
-Kết quả chạy: mở http://127.0.0.1:8103. Giữ terminal máy chủ mở, dùng terminal thứ hai tại cùng thư mục để sửa/chạy test. Dừng bằng Ctrl+C; không mở hai máy chủ cùng cổng.
+Kết quả chạy: mở http://127.0.0.1:8104. Giữ terminal máy chủ mở, dùng terminal thứ hai tại cùng thư mục để sửa/chạy test. Dừng bằng Ctrl+C; không mở hai máy chủ cùng cổng.
 
 Kiểm tra trước khi thực hành:
 
@@ -61,354 +61,383 @@ Kiểm tra trước khi thực hành:
 - [ ] Chạy được chương trình mẫu và xác định được thư mục chứa mã nguồn.
 - [ ] Phân biệt lệnh test dùng cho bài mẫu và lệnh extend dùng cho bài tập mở rộng.
 
-## III. CẤU TRÚC MÃ NGUỒN VÀ LUỒNG XỬ LÝ
+## III. TỔ CHỨC DỮ LIỆU
 
-Thư mục Lab03/Ma\_nguon đã có mã mẫu cho phần hướng dẫn. Chạy mẫu trước để xem kết quả, sau đó đọc và thực hiện lại các bước ở phần IV trên chính các tệp đó. Khi bài yêu cầu thay toàn bộ nội dung, không chép nối thêm một hàm hoặc lớp trùng tên. Phần mở rộng để sinh viên tự hoàn thiện ở mục VI.
+Thư mục Lab04/Ma\_nguon đã có mã mẫu cho phần hướng dẫn. Chạy mẫu trước để xem kết quả, sau đó đọc và thực hiện lại các bước ở phần IV trên chính các tệp đó. Khi bài yêu cầu thay toàn bộ nội dung, không chép nối thêm một hàm hoặc lớp trùng tên. Phần mở rộng để sinh viên tự hoàn thiện ở mục VI.
 
 | **Phần thực hành** | **Tệp và công việc** | **Kết quả cần đạt** |
 | --- | --- | --- |
-| Mẫu có hướng dẫn | src/EventFilter.php; public/index.php; public/register.php; data/events.php<br>Đọc và thực hiện lại chức năng tìm theo từ khóa và Form đăng ký. Giải thích luồng GET/POST và cách kiểm tra dữ liệu. | Từ khóa php: 1 sự kiện; xyz: 0. Form hợp lệ có PREVIEW\_OK. bash lab.sh test: TESTS=7 FAILED=0. |
-| Bài tự mở rộng | src/EventFilter.php; public/index.php<br>Bổ sung lọc kết hợp từ khóa, loại và còn chỗ bằng AND. Thêm hai điều kiện vào Form; giữ lại lựa chọn sau khi gửi. | bash lab.sh extend: TESTS=8 FAILED=0. Git + tech + còn chỗ trả ID 3. Kiểm tra thêm hai điều kiện trên trang Web. |
+| Mẫu có hướng dẫn | src/Draft.php; src/Session.php; public/register.php; public/confirm.php; public/complete.php<br>Đọc và thực hiện lại luồng nhập, lưu nháp, xác nhận, sửa và hủy. Phân biệt dữ liệu Session với Cookie tùy chọn. | Hoàn tất hợp lệ có SIMULATED\_OK; hủy xóa nháp. bash lab.sh test: TESTS=6 FAILED=0. Chưa ghi CSDL. |
+| Bài tự mở rộng | src/DraftGuard.php; public/confirm.php; public/complete.php<br>Viết canComplete, rồi nối vào bước hoàn tất. Kiểm tra sự kiện, thời điểm tạo, thời hạn và dữ liệu bản nháp. | bash lab.sh extend: TESTS=7 FAILED=0. Đúng mốc hết hạn phải từ chối; xác nhận hợp lệ vẫn chạy sau khi tích hợp. |
 
 Vai trò từng tệp trong bài mẫu:
 
-| **Tệp** | **Bạn làm gì trong bài?** |
+| **Thành phần** | **Vai trò** |
 | --- | --- |
-| data/events.php | Đọc mảng được cấp; hiểu từng trường dữ liệu. |
-| src/EventFilter.php | Tạo hàm tìm sự kiện theo từ khóa. |
-| src/Input.php | Đọc các hàm kiểm tra đầu vào và hiển thị an toàn đã cấp. |
-| public/index.php | Tạo trang danh sách có form tìm kiếm. |
-| public/register.php | Tạo form POST và hiển thị kết quả kiểm tra. |
-| templates/header.php, footer.php | Thành phần giao diện có sẵn; nạp lại ở các trang. |
+| src/Session.php | Đã cấp. Khởi tạo phiên, Cookie phiên và token bảo vệ form. |
+| src/Draft.php | Bạn đọc và sửa. Hàm lưu, kiểm tra tuổi và xóa bản nháp. |
+| public/register.php | Bạn đọc và sửa. Nhận form, lưu nháp, chuyển trang. |
+| public/confirm.php | Bạn đọc và sửa. Đọc nháp để xem lại, sửa hoặc hủy. |
+| public/complete.php | Bạn đọc và sửa. Kết thúc mô phỏng, xóa nháp rồi chuyển sang trang kết quả. |
+| public/cancel.php | Bạn đọc và sửa. Xử lý nút hủy bằng POST. |
+| public/preferences.php | Bạn đọc và sửa. Lưu tùy chọn xem vào Cookie. |
 
-Luồng tìm kiếm: trình duyệt gửi q qua GET → index.php đọc từ khóa → filterEvents chọn sự kiện → vòng lặp dựng HTML. Luồng đăng ký: trình duyệt gửi các trường qua POST → register.php gọi validateRegistration → hiển thị lỗi hoặc bản xem trước.
+Session của mẫu lưu draft gồm data (thông tin đăng ký) và created\_at (thời điểm tạo). Cookie view chỉ có giá trị compact hoặc full. Không lưu họ tên, email, mật khẩu hoặc quyền quản trị trong Cookie tùy chọn.
 
 ## IV. HƯỚNG DẪN THỰC HÀNH
 
-### Bước 1. Xem mảng dữ liệu sự kiện
+### Bước 1. Đọc tệp khởi tạo phiên đã cấp
 
-Mở data/events.php. Tệp đã có nội dung:
+Mở src/Session.php. Tệp gọi session\_start() trước khi gửi HTML. Sau đó PHP đọc hoặc ghi dữ liệu bằng $\_SESSION. Trình duyệt nhận Cookie chứa định danh phiên; dữ liệu bản nháp nằm phía máy chủ \[PHP-SESSION\].
 
-```php
-<?php
-return [
- ['id'=>1, 'title'=>'PHP Open Day', 'category'=>'tech', 'capacity'=>10, 'registered'=>9],
- ['id'=>2, 'title'=>'Design Workshop', 'category'=>'design', 'capacity'=>5, 'registered'=>5],
- ['id'=>3, 'title'=>'Git Clinic', 'category'=>'tech', 'capacity'=>20, 'registered'=>2],
-];
-```
-
-Tệp chứa mảng gồm ba sự kiện. Mỗi sự kiện có các trường dữ liệu, trong đó capacity là sức chứa và registered là số người đăng ký giả lập. Lệnh return cho phép nơi gọi require nhận lại mảng này.
+Tệp đã có hàm checkCsrf và trường csrf ẩn trong Form. Giữ các thành phần này khi sửa bài: chúng đối chiếu token của yêu cầu với token trong phiên. Giảng viên giới thiệu cơ chế hoạt động; bài chưa yêu cầu xây dựng chức năng đăng nhập.
 
 Kiểm tra kết quả bước 1:
 
-- [ ] Xác định danh sách có 3 sự kiện và các khóa id/title/category/capacity/registered.
+- [ ] Session được mở trước HTML; phần token đã cấp được giữ nguyên.
 
-### Bước 2. Tạo hàm lọc
+### Bước 2. Tạo các hàm quản lý bản nháp
 
-Mở src/EventFilter.php và đối chiếu với mã dưới đây. Nếu viết lại tệp, thay nội dung hiện tại; tránh khai báo trùng hàm hoặc lớp:
+Mở src/Draft.php và đối chiếu với mã dưới đây. Nếu viết lại tệp, thay nội dung hiện tại; tránh khai báo trùng hàm hoặc lớp:
 
 ```php
 <?php
 declare(strict_types=1);
- 
-function filterEvents(array $events, string $query): array
-{
-    $result = [];
-    foreach ($events as $event) {
-        $matches = $query === ''
-            || stripos($event['title'], $query) !== false;
-        if ($matches) {
-            $result[] = $event;
-        }
-    }
-    return $result;
+function saveDraft(array &$session, array $data, int $now): void {
+    $session['draft'] = ['data'=>$data, 'created_at'=>$now];
+    unset($session['completed']);
 }
+function draftExpired(array $session, int $now, int $ttl): bool {
+    if (!isset($session['draft'])) { return true; }
+    return $now - $session['draft']['created_at'] >= $ttl;
+}
+function cancelDraft(array &$session): void { unset($session['draft']); }
 ```
 
-Hàm bắt đầu với mảng kết quả rỗng, duyệt từng sự kiện và chỉ thêm sự kiện phù hợp. stripos tìm vị trí từ khóa không phân biệt hoa/thường trong phạm vi chuỗi của bài; trả false nếu không tìm thấy. Vì vị trí đầu tiên có thể là số 0, phải dùng !== false, không viết if (stripos(...)).
+&amp;$session nhận tham chiếu để thay đổi mảng ở nơi gọi; khi truyền $\_SESSION, thay đổi được giữ trong phiên. Hàm saveDraft lưu dữ liệu và thời điểm tạo, đồng thời xóa kết quả hoàn tất cũ. unset chỉ xóa khóa được chỉ định, không xóa mọi dữ liệu của phiên.
 
-Từ khóa rỗng nghĩa là lấy tất cả. Hàm chỉ trả dữ liệu, không in HTML; cùng cách tách xử lý khỏi hiển thị đã dùng trong lớp xử lý PHP. Bài mẫu chưa hỗ trợ tìm tiếng Việt không dấu hoặc chuẩn hóa Unicode.
+$now - created\_at là tuổi bản nháp tính bằng giây. Bản nháp hết hạn khi tuổi lớn hơn hoặc bằng $ttl. Nhận $now qua tham số giúp kiểm thử thời gian giả lập mà không phải chờ thật 30 phút.
+
+Mẫu dùng dữ liệu bản nháp do chính ứng dụng tạo nên hàm kiểm tra còn đơn giản. Phần tự làm sẽ xử lý dữ liệu thiếu, sai sự kiện và thời điểm không hợp lệ.
 
 Kiểm tra kết quả bước 2:
 
-- [ ] Hàm filterEvents nhận mảng và từ khóa, trả mảng mới không sửa đầu vào.
+- [ ] Nháp gồm data/created\_at; lưu nháp mới xóa kết quả hoàn tất cũ.
 
-### Bước 3. Đọc hai hàm hỗ trợ đầu vào và hiển thị
+### Bước 3. Tạo trang nhập và lưu nháp
 
-Mở src/Input.php, tìm hai hàm sau (đã được cấp, không tạo thêm bản trùng):
+Mở public/register.php:
 
 ```php
-function field(array $input, string $key): string
-{
-    $value = $input[$key] ?? '';
-    return is_string($value) ? trim($value) : '';
+<?php
+require __DIR__.'/../src/Session.php';
+require __DIR__.'/../src/Input.php';
+require __DIR__.'/../src/Draft.php';
+$events = require __DIR__.'/../data/events.php';
+$errors = [];
+$data = $_SESSION['draft']['data'] ?? ['event_id'=>1,'name'=>'','email'=>''];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    checkCsrf($_POST);
+    $result = validateRegistration($_POST, $events);
+    $errors = $result['errors']; $data = $result['data'];
+    if (!$errors) {
+        saveDraft($_SESSION, $data, time());
+        header('Location: /confirm.php', true, 303); exit;
+    }
 }
- 
-function e(string $value): string
-{
-    return htmlspecialchars(
-        $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'
-    );
-}
+require __DIR__.'/../templates/header.php';
+?>
+<div class="page-heading">
+<h1>Bước 1. Nhập thông tin</h1>
+<p>Điền thông tin để chuyển đến bước xem lại bản nháp.</p>
+</div>
+<div class="error-summary" role="alert">
+<p class="error-messages"><?= e(implode(', ', $errors)) ?></p>
+<p>Thông tin chưa hợp lệ. Kiểm tra lại các thông tin đã nhập rồi gửi lại.</p>
+</div>
+<form class="registration-form" method="post">
+<input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+<label class="form-field" for="event_id">Sự kiện
+<select id="event_id" name="event_id">
+<?php foreach($events as $event): ?>
+<option value="<?= $event['id'] ?>" <?= (int)$data['event_id']===$event['id']?'selected':'' ?>>
+<?= e($event['title']) ?>
+</option>
+<?php endforeach; ?>
+</select>
+</label>
+<label class="form-field" for="name">Họ tên
+<input id="name" name="name" value="<?= e($data['name']) ?>">
+</label>
+<label class="form-field" for="email">Email
+<input id="email" name="email" value="<?= e($data['email']) ?>">
+</label>
+<button>Tiếp tục</button>
+</form>
+<form class="preferences-form" method="post" action="/preferences.php">
+<h2>Tùy chọn hiển thị</h2>
+<p>Form này chỉ lưu tùy chọn Cookie, không gửi đăng ký.</p>
+<input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+<label class="form-field" for="view">Cách hiển thị
+<select id="view" name="view">
+<option value="compact">Gọn</option>
+<option value="full">Đầy đủ</option>
+</select>
+</label>
+<button class="button-secondary">Lưu tùy chọn</button>
+</form>
+<p class="cookie-status">Tùy chọn Cookie: <?= e(field($_COOKIE, 'view')) ?>
+</p>
+<?php require __DIR__.'/../templates/footer.php'; ?>
 ```
 
-field đọc một trường, bỏ khoảng trắng ở hai đầu và không nhận mảng thay cho chuỗi. ?? cung cấp giá trị mặc định khi không có trường. Hàm e đổi ký tự đặc biệt trước khi chèn văn bản vào HTML; nó không làm sạch mọi loại dữ liệu và không thay thế kiểm tra nghiệp vụ.
+Đọc phần PHP đầu tệp: nếu đã có nháp thì lấy dữ liệu điền lại form; nếu chưa có thì dùng giá trị rỗng. Khi POST, kiểm tra token trước, sau đó dùng hàm kiểm tra dữ liệu trong src/Input.php được cấp. Chỉ khi không có lỗi mới gọi saveDraft.
+
+header('Location: /confirm.php', true, 303) yêu cầu trình duyệt chuyển sang GET trang xác nhận. exit ngăn chương trình tiếp tục xuất HTML sau khi đã chuyển hướng. Không đặt dòng echo hoặc HTML trước phần xử lý này.
+
+Form sử dụng trường ẩn csrf; giá trị lấy từ Session. Form nhỏ thứ hai chỉ lưu tùy chọn hiển thị, không gửi đăng ký. Trang nhận dữ liệu của form này được xây dựng ở bước 7.
 
 Kiểm tra kết quả bước 3:
 
-- [ ] Phân biệt field lấy chuỗi an toàn và e xử lý ký tự khi hiển thị HTML.
+- [ ] Nhập hợp lệ chuyển đến xác nhận; quay lại sửa thấy đúng dữ liệu nháp.
 
-### Bước 4. Tạo trang danh sách hoàn chỉnh
+### Bước 4. Tạo trang xác nhận
 
-Mở public/index.php và đối chiếu với mã dưới đây. Nếu viết lại tệp, thay nội dung hiện tại; tránh khai báo trùng hàm hoặc lớp:
+Mở public/confirm.php:
 
 ```php
 <?php
-require __DIR__ . '/../src/Input.php';
-require __DIR__ . '/../src/EventFilter.php';
-$events = require __DIR__ . '/../data/events.php';
-$query = field($_GET, 'q');
-$visible = filterEvents($events, $query);
-require_once __DIR__ . '/../templates/event-presentation.php';
-require __DIR__ . '/../templates/header.php';
+require __DIR__.'/../src/Session.php';
+require __DIR__.'/../src/Input.php';
+require __DIR__.'/../src/Draft.php';
+if (draftExpired($_SESSION, time(), 1800)) {
+    cancelDraft($_SESSION);
+    header('Location: /register.php', true, 303); exit;
+}
+$data = $_SESSION['draft']['data'];
+require __DIR__.'/../templates/header.php';
 ?>
-<div class="page-heading page-heading--list page-search">
-<h1>Sự kiện</h1>
-<p>Tìm theo tên và xem thông tin sự kiện.</p>
+<div class="page-heading">
+<h1>Bước 2. Xác nhận</h1>
+<p>Đối chiếu thông tin trước khi xác nhận.</p>
 </div>
-<form class="search-form" method="get">
-    <label class="form-field" for="q">Từ khóa
-<input id="q" name="q" value="<?= e($query) ?>">
-    </label>
-    <button>Tìm</button>
+<section class="confirmation" aria-label="Thông tin đăng ký">
+<dl class="summary-list">
+<div>
+<dt>Họ tên</dt>
+<dd><?= e($data['name']) ?></dd>
+</div>
+<div>
+<dt>Email</dt>
+<dd><?= e($data['email']) ?></dd>
+</div>
+</dl>
+<div class="confirmation-actions">
+<a href="/register.php">Sửa lại</a>
+<form method="post" action="/complete.php">
+<input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+<button>Xác nhận</button>
 </form>
-<p class="result-count">Kết quả: <?= count($visible) ?></p>
-<section class="event-list" aria-label="Danh sách sự kiện">
-<?php foreach ($visible as $event): ?>
-    <article class="event-item event-card">
-<?php $content = uiContent((int)$event['id']); ?>
-<figure class="event-cover">
-<img src="<?= e(uiImage($content['image'])) ?>" alt="<?= e($content['alt']) ?>" width="960" height="540">
-<figcaption>Minh họa</figcaption>
-</figure>
-<div class="event-card-content">
-        <h2 class="event-title"><?= e($event['title']) ?></h2>
-<p class="event-date"><?= e(uiDate($content['start'])) ?></p>
-<p class="event-venue"><?= e($content['venue']) ?></p>
-<p><?= e($content['summary']) ?></p>
-<p class="event-meta">
-        Loại: <?= e($event['category']) ?>. 
-        Còn <?= max(0, $event['capacity'] - $event['registered']) ?>
-        chỗ (dữ liệu mẫu).
-    </p>
-<a class="text-button" href="/event.php?id=<?= (int)$event['id'] ?>">Xem chi tiết</a>
+<form method="post" action="/cancel.php">
+<input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+<button class="button-secondary button-cancel">Hủy bản nháp</button>
+</form>
 </div>
-</article>
-<?php endforeach; ?>
 </section>
-<?php if (!$visible): ?>
-    <p class="empty-state">Không có kết quả.<span>Thử tìm với một từ khóa khác.</span>
-</p>
-<?php endif; ?>
-<p class="content-note">Thời gian, địa điểm và ảnh bổ sung là nội dung hư cấu phục vụ học tập. Dữ liệu đăng ký vẫn lấy từ nguồn gốc của lab.</p>
-<section class="demo-entry"><h2>Sáu bối cảnh, một khu thử riêng</h2>
-<p>Hội thảo, workshop, âm nhạc, nghề nghiệp, online và triển lãm. Thử vé và ghế mà không đưa lựa chọn vào đăng ký của lab.</p>
-<a class="text-button" href="/ui-demo.php">Khám phá sự kiện mẫu</a></section>
-<?php require __DIR__ . '/../templates/footer.php'; ?>
+<?php require __DIR__.'/../templates/footer.php'; ?>
 ```
 
-Đọc theo thứ tự: ba lệnh require đầu nạp hàm và dữ liệu; $query đọc từ khóa; $visible nhận danh sách kết quả; header được nạp trước phần HTML, footer ở cuối. name="q" là tên trường để PHP đọc $\_GET\['q'\]; value giữ lại từ khóa sau khi gửi form. Dấu &lt;?= ... ?&gt; in một giá trị vào HTML.
+Nếu chưa có nháp hoặc nháp đã hết 1.800 giây, trang đưa người dùng về form. Nhờ đó không thể gõ thẳng URL xác nhận khi chưa nhập thông tin. Với nháp còn hiệu lực, trang chỉ đọc và hiển thị.
 
-Đoạn foreach ... endforeach chỉ lặp qua kết quả tìm được, không phải mảng gốc. if (!$visible) xử lý mảng rỗng. Cú pháp dạng dấu : giúp trộn vòng lặp với HTML dễ nhìn hơn; ý nghĩa vẫn là vòng lặp PHP đã học.
+Nút Sửa lại là liên kết GET vì chỉ mở form. Hai nút Xác nhận và Hủy là form POST vì làm thay đổi trạng thái. Không bỏ e khi hiển thị họ tên hoặc email đã lưu.
 
 Kiểm tra kết quả bước 4:
 
-- [ ] Trang dùng require/foreach và form GET; biết dòng nào gọi hàm lọc.
+- [ ] Không có nháp hoặc nháp hết hạn thì quay về nhập, không xác nhận được.
 
-### Bước 5. Chạy trang và đối chiếu
+### Bước 5. Tạo bước hoàn tất mô phỏng
 
-```bash
-bash lab.sh run
-```
-
-Mở http://127.0.0.1:8103. Không nhập từ khóa: 3 sự kiện. Nhập php: 1 sự kiện. Nhập xyz: 0 và có thông báo không tìm thấy. Quan sát URL có ?q=php; đây là dữ liệu GET.
-
-![Kết quả tìm kiếm từ khóa php](Hinh_anh/hinh_03.png)
-
-*Kết quả tìm kiếm từ khóa php*
-
-Kiểm tra kết quả bước 5:
-
-- [ ] Từ khóa php có 1, xyz có 0, để trống có 3 sự kiện.
-
-### Bước 6. Hiểu quy tắc kiểm tra form đã cấp
-
-Trong src/Input.php, đọc validateRegistration. Hàm nhận dữ liệu form và danh sách sự kiện. Nó kiểm tra ID phải có trong danh sách; họ tên không rỗng; email đúng định dạng cơ bản. Kết quả luôn có hai phần: errors chứa mã lỗi, data chứa dữ liệu đã xử lý.
-
-Theo quy ước của bài mẫu, email được chuyển sang chữ thường bằng strtolower. Độ dài họ tên được kiểm tra bằng strlen, tính theo byte, không phải số ký tự tiếng Việt. Kiểm tra dữ liệu và xử lý ký tự HTML là hai công việc riêng \[PHP-INPUT\].
-
-Kiểm tra kết quả bước 6:
-
-- [ ] Xác định được nơi kiểm tra ID sự kiện, tên và email trên máy chủ.
-
-### Bước 7. Tạo trang tiếp nhận form
-
-Mở public/register.php và thay toàn bộ nội dung bằng đoạn mã dưới; không chép nối vào phần đang có:
+Mở public/complete.php:
 
 ```php
 <?php
-require __DIR__ . '/../src/Input.php';
-$events = require __DIR__ . '/../data/events.php';
-$result = null;
+require __DIR__.'/../src/Session.php';
+require __DIR__.'/../src/Input.php';
+require __DIR__.'/../src/Draft.php';
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $result = validateRegistration($_POST, $events);
+    checkCsrf($_POST);
+    if (draftExpired($_SESSION, time(), 1800)) {
+        cancelDraft($_SESSION);
+        header('Location: /register.php', true, 303); exit;
+    }
+    $_SESSION['completed'] = 'SIMULATED_OK';
+    cancelDraft($_SESSION);
+    header('Location: /complete.php', true, 303); exit;
 }
-require __DIR__ . '/../templates/header.php';
+if (!isset($_SESSION['completed'])) {
+    header('Location: /register.php', true, 303); exit;
+}
+require __DIR__.'/../templates/header.php';
 ?>
 <div class="page-heading">
-<h1>Đăng ký tham dự</h1>
-<p>Điền thông tin để kiểm tra và xem trước. Chưa lưu đăng ký.</p>
+<h1>Bước 3. Hoàn tất mô phỏng</h1>
 </div>
-<form class="registration-form" method="post">
-    <label class="form-field" for="event_id">Sự kiện
-<select id="event_id" name="event_id">
-            <?php foreach ($events as $event): ?>
-                <option value="<?= $event['id'] ?>">
-                    <?= e($event['title']) ?>
-                </option>
-            <?php endforeach; ?>
-        </select>
-    </label>
-    <label class="form-field" for="name">Họ tên
-<input id="name" name="name" maxlength="120"
-               value="<?= e(field($_POST, 'name')) ?>">
-    </label>
-    <label class="form-field" for="email">Email
-<input id="email" name="email"
-               value="<?= e(field($_POST, 'email')) ?>">
-    </label>
-    <button>Kiểm tra</button>
-</form>
-<?php if ($result !== null): ?>
-    <?php if ($result['errors']): ?>
-        <div class="error-summary" role="alert">
-<p class="error-messages"><?= e(implode(', ', $result['errors'])) ?></p>
-<p>Thông tin chưa hợp lệ. Kiểm tra lại các thông tin đã nhập rồi gửi lại.</p>
-</div>
-    <?php else: ?>
-        <section class="preview" role="status">
-<h2>Xem trước thông tin</h2>
-<p class="status-message">PREVIEW_OK: <?= e($result['data']['name']) ?>
-            — <?= e($result['data']['email']) ?></p>
-        <p>Chỉ xem trước; chưa lưu Session hoặc CSDL.</p>
+<section class="completion" role="status">
+<p class="status-message">
+<?= e($_SESSION['completed']) ?>
+</p>
+<p>Chưa ghi vào CSDL; đây không phải vé hoặc bằng chứng đăng ký thật.</p>
 </section>
-    <?php endif; ?>
-<?php endif; ?>
-<?php require __DIR__ . '/../templates/footer.php'; ?>
+<?php require __DIR__.'/../templates/footer.php'; ?>
 ```
 
-Lần mở trang đầu dùng GET: $result là null, chưa hiển thị kết quả. Khi bấm Kiểm tra, trình duyệt POST đến chính trang hiện tại vì form không đặt action. PHP chỉ gọi hàm validation trong nhánh POST.
+POST hợp lệ tạo dấu SIMULATED\_OK trong Session, xóa bản nháp, rồi chuyển sang GET cùng trang. Làm mới trang kết quả sẽ không gửi lại POST. Nếu gõ trực tiếp URL mà chưa hoàn tất, mẫu đưa về form.
 
-Danh sách chọn gửi ID sự kiện; các ô họ tên và email sử dụng thuộc tính name để PHP đọc dữ liệu. Khi có lỗi, Form giữ lại họ tên và email để chỉnh sửa. Bản mẫu chưa giữ lựa chọn sự kiện sau lỗi; sinh viên có thể bổ sung chức năng này.
+Đây là luồng POST → chuyển hướng → GET. Nó giúp tránh một số hành vi gửi lại form do tải lại trang; không được coi là cơ chế bảo đảm mọi thao tác ghi dữ liệu không bao giờ lặp. Khi có thao tác ghi CSDL, cần kiểm tra thêm ràng buộc dữ liệu.
 
-implode nối các mã lỗi để hiển thị. Chỉ khi mảng lỗi rỗng mới có PREVIEW\_OK. Không tạo bản ghi, vé hoặc số đăng ký trong bài này.
+Kiểm tra kết quả bước 5:
+
+- [ ] Hoàn tất mô phỏng cho kết quả trong phiên; hiểu rằng chưa tạo hàng CSDL.
+
+### Bước 6. Tạo xử lý hủy
+
+Mở public/cancel.php:
+
+```php
+<?php
+require __DIR__.'/../src/Session.php';
+require __DIR__.'/../src/Draft.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit('POST_REQUIRED'); }
+checkCsrf($_POST);
+cancelDraft($_SESSION);
+header('Location: /register.php', true, 303); exit;
+```
+
+Mã chỉ nhận POST, kiểm tra token rồi xóa khóa bản nháp. Không gọi session\_destroy() vì ta không muốn xóa token và mọi trạng thái khác của phiên chỉ để hủy một form.
+
+Kiểm tra kết quả bước 6:
+
+- [ ] Hủy xóa nháp và quay lại nhập; không xóa toàn bộ dữ liệu phiên.
+
+### Bước 7. Ghi và đọc Cookie tùy chọn
+
+Mở public/preferences.php:
+
+```php
+<?php
+require __DIR__.'/../src/Session.php';
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') { http_response_code(405); exit('POST_REQUIRED'); }
+checkCsrf($_POST);
+$view = $_POST['view'] ?? '';
+if (!is_string($view) || !in_array($view, ['compact', 'full'], true)) {
+    http_response_code(422); exit('VIEW_INVALID');
+}
+setcookie('view', $view, ['expires'=>time()+3600, 'path'=>'/', 'httponly'=>true,
+    'samesite'=>'Lax', 'secure'=>isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off']);
+header('Location: /register.php', true, 303); exit;
+```
+
+Cookie tồn tại một giờ và áp dụng cho đường dẫn /. Giá trị chỉ được chọn trong hai lựa chọn đã công bố. Sau setcookie, trình duyệt nhận Cookie rồi gửi lại trong request tiếp theo; việc chuyển hướng giúp trang form đọc được giá trị mới qua $\_COOKIE.
+
+Trong giao diện mẫu, lựa chọn được hiển thị bằng dòng “Tùy chọn Cookie”; chưa thay toàn bộ cách bố trí giao diện. Các thuộc tính httponly, samesite và secure được cấp sẵn. secure bật khi chạy HTTPS; môi trường HTTP cục bộ không được đặt Secure cố định, nếu không trình duyệt sẽ không gửi Cookie đó qua HTTP.
 
 Kiểm tra kết quả bước 7:
 
-- [ ] Trang register.php nhận POST và hiển thị kết quả xem trước, chưa ghi CSDL.
+- [ ] Cookie chỉ chứa compact/full và đọc được ở request tiếp theo; không lưu thông tin nhạy cảm.
 
-### Bước 8. Thử dữ liệu đúng, sai và đặc biệt
-
-Mở /register.php và thử theo bảng. Chạy trên máy cục bộ, không thử trên website bên ngoài.
-
-| **Dữ liệu** | **Kết quả cần quan sát** |
-| --- | --- |
-| Sự kiện 1, họ tên O'Neil, email demo@example.test | Có PREVIEW\_OK, tên chứa dấu nháy vẫn đúng. |
-| Họ tên trống, email bad | Có mã lỗi, không có PREVIEW\_OK. |
-| Họ tên &lt;b&gt;Demo&lt;/b&gt;, email hợp lệ | Hiển thị nguyên văn, không biến thành thẻ chữ đậm. |
-| Từ khóa không có kết quả | Danh sách rỗng nhưng trang vẫn hoạt động. |
-
-Dừng máy chủ rồi chạy php tests/run.php. Có 7 ca và FAILED=0. Ca dữ liệu ID không tồn tại được kiểm tra qua test; dropdown không tự cho người dùng chọn ID sai nhưng máy chủ vẫn phải phòng trường hợp đó.
-
-Kiểm tra kết quả bước 8:
-
-- [ ] Tên chứa &lt;b&gt; hiển thị nguyên văn; email sai không được PREVIEW\_OK.
-
-Kết quả sau phần hướng dẫn: Từ khóa php: 1 sự kiện; xyz: 0. Form hợp lệ có PREVIEW\_OK. bash lab.sh test: TESTS=7 FAILED=0.
+Kết quả sau phần hướng dẫn: Hoàn tất hợp lệ có SIMULATED\_OK; hủy xóa nháp. bash lab.sh test: TESTS=6 FAILED=0. Chưa ghi CSDL.
 
 ## V. LỖI THƯỜNG GẶP VÀ CÁCH KHẮC PHỤC
 
-| **Hiện tượng** | **Cách kiểm tra** |
-| --- | --- |
-| Không thấy thay đổi vừa sửa | Bạn có còn chạy máy chủ từ thư mục bản khác? Dừng máy chủ bằng Ctrl+C và chạy lại bash lab.sh run tại Ma\_nguon đang sửa. |
-| Cannot redeclare ... | Một hàm có bị chép hai lần không? Giữ mỗi định nghĩa ở đúng một tệp. |
-| Tìm từ nằm ở đầu tiêu đề không ra | So sánh stripos với !== false, đừng coi vị trí 0 là không tìm thấy. |
-| Lỗi tên trường không tồn tại | Kiểm tra name của input và khóa truyền cho field. |
-| Chữ nhập vào biến thành HTML | Kiểm tra những nơi in dữ liệu có dùng e không. |
+```bash
+php tests/run.php
+bash lab.sh run
+```
 
-## VI. BÀI TẬP MỞ RỘNG: KẾT HỢP BA BỘ LỌC
+Nếu máy chủ cũ còn chạy, dùng terminal thứ hai để chạy test hoặc dừng bằng Ctrl+C. Mở đúng địa chỉ của bài thực hành.
+
+| **Phép thử** | **Kết quả cần thấy** |
+| --- | --- |
+| Nhập hợp lệ → Tiếp tục | Sang xác nhận, thông tin đúng. |
+| Sửa lại → thay họ tên → Tiếp tục | Xác nhận dùng tên mới. |
+| Hủy bản nháp | Trở về form; không giữ bản nháp vừa hủy. |
+| Xác nhận → tải lại trang | Vẫn SIMULATED\_OK, không cần gửi lại form. |
+| Mở xác nhận trong cửa sổ riêng tư mới | Bị đưa về form vì phiên mới chưa có nháp. |
+| Lưu tùy chọn compact | Request tiếp theo hiển thị Cookie compact. |
+
+Hai tab trong cùng trình duyệt thường dùng chung Cookie phiên; không dùng hai tab để chứng minh hai người dùng độc lập. Dùng cửa sổ riêng tư hoặc trình duyệt khác. Giữ token bảo vệ biểu mẫu và thông tin cá nhân trong môi trường thực hành.
+
+| **Lỗi** | **Cách kiểm tra** |
+| --- | --- |
+| Headers already sent | Có khoảng trắng/BOM/HTML trước session\_start hoặc header không? |
+| CSRF\_INVALID | Có giữ trường hidden csrf và dùng cùng phiên không? Tải lại form để nhận token hợp lệ, không tắt kiểm tra. |
+| Sửa lại nhưng mất dữ liệu | Xem dữ liệu được lấy từ $\_SESSION\['draft'\]\['data'\] và truyền vào giá trị input chưa. |
+| Cookie chưa có ngay sau khi ghi | Đọc ở request tiếp theo; giữ chuyển hướng sau setcookie. |
+
+## VI. BÀI TẬP MỞ RỘNG: KIỂM TRA BẢN NHÁP TRƯỚC KHI HOÀN TẤT
 
 ```bash
 # Vẫn đứng trong Ma_nguon của bài này.
 bash lab.sh extend
 ```
 
-Hoàn thiện src/EventFilter.php để lọc đồng thời theo từ khóa, loại sự kiện và tình trạng còn chỗ. Trang ban đầu có ô nhập từ khóa; sinh viên bổ sung ô chọn loại và tùy chọn còn chỗ theo yêu cầu dưới đây. Giữ tên hàm, tham số và dữ liệu kiểm thử theo yêu cầu.
+Hoàn thiện hàm canComplete trong src/DraftGuard.php. Kiểm thử hàm trước, sau đó tích hợp vào trang hoàn tất theo hướng dẫn dưới đây.
 
-| **Bộ lọc** | **ID cần trả về** |
-| --- | --- |
-| Không lọc | 1, 2, 3 |
-| php | 1 |
-| Loại tech | 1, 3 |
-| Chỉ còn chỗ | 1, 3 |
-| Git + tech + còn chỗ | 3 |
-| design + còn chỗ | Rỗng |
-| Loại không tồn tại | Rỗng |
+Hàm nhận mảng Session, ID sự kiện đang yêu cầu, thời gian hiện tại và thời gian sống. Chỉ trả true khi có bản nháp hợp lệ, đúng sự kiện, chưa hết hạn, thời điểm tạo không ở tương lai và thời gian sống lớn hơn 0. Thời điểm đúng ngưỡng hết hạn phải trả false.
 
-Chạy bash lab.sh extend; kết quả yêu cầu là TESTS=8 FAILED=0. Hàm cần trả mảng mới, không thay đổi mảng đầu vào và không chèn HTML vào kết quả. Kiểm tra thêm trên giao diện: các điều kiện đã chọn phải được giữ lại sau khi gửi Form.
+Chạy bash lab.sh extend để kiểm tra 7 ca mở rộng; chạy lại bash lab.sh test để kiểm tra chức năng cũ. Bộ kiểm thử sử dụng now=1300, created\_at=1000, ttl=300 cho trường hợp đúng ngưỡng hết hạn, nên không cần chờ thời gian thực.
 
-### Nối bộ lọc mở rộng vào cùng trang đang làm
+### Nối hàm kiểm tra vào bước hoàn tất
 
-Mở src/EventFilter.php. Hàm cần nhận thêm hai tham số tùy chọn:
+Sau khi bash lab.sh extend đạt, mở public/confirm.php. Trong form action="/complete.php", ngay sau trường ẩn csrf, thêm trường ID sự kiện:
 
 ```php
-function filterEvents(array $events, string $query,
-    string $category = '', bool $availableOnly = false): array
+<input type="hidden" name="event_id"
+       value="<?= (int)$data['event_id'] ?>">
 ```
 
-Sửa hàm hiện có, không khai báo thêm hàm trùng tên. Sau khi các ca kiểm thử đạt, mở public/index.php và thêm phần đọc điều kiện ngay sau dòng đọc từ khóa:
+Không thêm trường này vào form hủy. Trình duyệt gửi ID để hàm đối chiếu với bản nháp phía máy chủ; trường ẩn không phải bằng chứng quyền truy cập. Nếu thiếu trường, hàm nhận ID 0 và từ chối ngay cả đăng ký hợp lệ.
+
+Tiếp theo mở public/complete.php. Thêm ngay sau các dòng require:
 
 ```php
-$category = field($_GET, 'category');
-$availableOnly = field($_GET, 'available') === '1';
-$visible = filterEvents($events, $query, $category, $availableOnly);
+require __DIR__.'/../src/DraftGuard.php';
 ```
 
-Thay lời gọi filterEvents hiện tại bằng lời gọi có đủ tham số. Giữ tên biến kết quả thống nhất với vòng lặp hiển thị ($visible hoặc $items). Thêm ô chọn loại và ô đánh dấu còn chỗ vào Form GET, lần lượt dùng name="category" và name="available"; giá trị khi đánh dấu là 1. Giữ lại các lựa chọn sau khi gửi Form.
+Trong nhánh POST, giữ checkCsrf($\_POST). Thay điều kiện kiểm tra bản nháp trước khi hoàn tất bằng điều kiện gọi hàm vừa viết:
+
+```php
+if (!canComplete($_SESSION, (int)field($_POST, 'event_id'), time(), 1800)) {
+    cancelDraft($_SESSION);
+    header('Location: /register.php', true, 303);
+    exit;
+}
+```
+
+Giữ nguyên phần hoàn tất mô phỏng phía sau. Gửi form xác nhận hợp lệ phải đến trang hoàn tất; yêu cầu sai sự kiện hoặc bản nháp hết hạn phải quay lại form. Thử bằng dữ liệu giả trên máy học tập.
 
 ## KẾT QUẢ CỦA BÀI THỰC HÀNH
 
-Có trang danh sách, bộ lọc theo từ khóa/loại/còn chỗ và Form đăng ký kiểm tra phía máy chủ. Dữ liệu đăng ký hợp lệ hiển thị ở mức xem trước, chưa lưu CSDL.
+Có luồng nhập, xem lại, sửa, hủy và hoàn tất mô phỏng; bản nháp sai hoặc hết hạn bị từ chối; các phiên sử dụng và tùy chọn giao diện tách biệt.
 
 ## VII. BẢNG KIỂM HOÀN THÀNH
 
-- [ ] Từ khóa php chỉ trả PHP Open Day; xyz trả danh sách rỗng.
-- [ ] Ba điều kiện lọc hoạt động trên cùng trang và được giữ lại.
-- [ ] Form thiếu họ tên hoặc email sai trả lỗi tại máy chủ.
-- [ ] Giá trị có dấu nháy/ký tự HTML được hiển thị như dữ liệu.
-- [ ] test và extend đạt; trang hiển thị khớp kết quả hàm lọc.
+- [ ] Tải lại trang xác nhận giữ đúng bản nháp còn hạn.
+- [ ] Sửa và hủy không làm thay đổi phiên của người khác.
+- [ ] Nháp hết hạn/sai sự kiện không hoàn tất được.
+- [ ] Yêu cầu thiếu token bị từ chối; Cookie giữ đúng tùy chọn.
+- [ ] test và extend đạt; luồng Web thực sự gọi kiểm tra bản nháp.
 
-Kết quả tổng hợp của phần tự làm phải có TESTS=8 FAILED=0. Ngoài các phép thử tự động, thực hiện các tình huống kiểm tra trực tiếp nêu trong bài. Lệnh check chỉ xác nhận môi trường, không thay cho test và extend.
+Kết quả tổng hợp của phần tự làm phải có TESTS=7 FAILED=0. Ngoài các phép thử tự động, thực hiện các tình huống kiểm tra trực tiếp nêu trong bài. Lệnh check chỉ xác nhận môi trường, không thay cho test và extend.
 
 ## VIII. RUBRIC LAB — 10 ĐIỂM
 
 | **Tiêu chí** | **Điểm** | **Cách chấm** |
 | --- | --- | --- |
 | Phần mẫu có hướng dẫn | 2,0 | 1 điểm: thực hiện và có kết quả đúng; 1 điểm: giải thích luồng mã. Mỗi phần đạt một phần: 0,5; chưa đạt: 0. |
-| Bộ lọc kết hợp | 1,5 | Từ khóa, loại và còn chỗ kết hợp theo AND; giá trị rỗng xử lý đúng; không sửa mảng gốc. |
-| Giao diện sử dụng bộ lọc | 1,5 | Có ô từ khóa, chọn loại, chọn còn chỗ; Form truyền đủ điều kiện và giữ lựa chọn sau khi gửi. |
-| Đầu vào và thông báo | 1,0 | Xử lý không có kết quả, tham số sai và ký tự HTML; dữ liệu hiển thị được mã hóa phù hợp. |
+| Kiểm tra bản nháp | 1,5 | Từ chối nháp không tồn tại, hết hạn, sai sự kiện hoặc sai cấu trúc theo yêu cầu. |
+| Tích hợp luồng xác nhận | 1,5 | Gọi phần kiểm tra trước khi hoàn tất; sửa/hủy giữ đúng trạng thái và không ảnh hưởng dữ liệu phiên khác. |
+| Bảo vệ thao tác | 1,0 | Thao tác đổi dữ liệu dùng POST và token được cấp; Cookie tùy chọn không chứa dữ liệu đăng ký hoặc quyền. |
 | Kiểm thử và xử lý lỗi | 2,0 | 1 điểm: có dữ liệu và kết quả mong đợi cho tình huống đúng, sai, biên; 1 điểm: chạy lại phần mẫu và mở rộng sau sửa. Mỗi phần đạt một phần: 0,5; chưa đạt: 0. |
 | Mã nguồn và bàn giao | 1,0 | 0,5: nộp đúng tệp, dữ liệu và phiên bản; 0,5: README có lệnh chạy/kiểm thử, không chứa cấu hình riêng. Đạt một phần mỗi mục: 0,25. |
 | Giải thích cá nhân | 1,0 | 0,5: giải thích phần tự viết; 0,5: giải thích một ca lỗi hoặc thực hiện một thay đổi nhỏ. Đạt một phần mỗi mục: 0,25. |
@@ -418,8 +447,8 @@ Với tiêu chí 1,5 điểm: đủ yêu cầu được 1,5; thực hiện một
 
 ## IX. NỘP BÀI
 
-Bước 1. Lưu mã bài mẫu và bài tự làm tại Lab03/Ma\_nguon, kèm dữ liệu, kiểm thử và README. Loại bỏ .local, mật khẩu và dữ liệu cá nhân thật khỏi bài nộp.
+Bước 1. Lưu mã bài mẫu và bài tự làm tại Lab04/Ma\_nguon, kèm dữ liệu, kiểm thử và README. Loại bỏ .local, mật khẩu và dữ liệu cá nhân thật khỏi bài nộp.
 
 Bước 2. Chạy bash lab.sh check, bash lab.sh test và bash lab.sh extend. Thực hiện các phép kiểm tra trực tiếp trong bài và sửa lỗi trước khi nộp.
 
-Bước 3. Commit, đẩy mã lên GitHub và nộp tên nhóm/thành viên, Lab 03, liên kết Ma\_nguon tại đúng commit. Kiểm tra quyền đọc; kèm lần chạy Actions khi được yêu cầu. Hạn và địa chỉ nộp do giảng viên công bố. Nếu nhận ZIP, giữ nguyên cấu trúc trên.
+Bước 3. Commit, đẩy mã lên GitHub và nộp tên nhóm/thành viên, Lab 04, liên kết Ma\_nguon tại đúng commit. Kiểm tra quyền đọc; kèm lần chạy Actions khi được yêu cầu. Hạn và địa chỉ nộp do giảng viên công bố. Nếu nhận ZIP, giữ nguyên cấu trúc trên.

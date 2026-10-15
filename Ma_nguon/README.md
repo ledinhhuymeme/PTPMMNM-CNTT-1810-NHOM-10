@@ -1,4 +1,4 @@
-# Lab 03 — Hiển thị sự kiện, tìm kiếm và xử lý form
+# Lab 04 — Quản lý bản nháp bằng session và cookie
 
 Mã mẫu cho phần hướng dẫn và mã khởi đầu cho bài tự làm.
 
@@ -11,7 +11,7 @@ bash lab.sh check
 bash lab.sh run
 ```
 
-Mở http://127.0.0.1:8103. Giữ terminal máy chủ hoạt động; dùng terminal thứ hai để kiểm thử. Nhấn Ctrl+C để dừng.
+Mở http://127.0.0.1:8104. Giữ terminal máy chủ hoạt động; dùng terminal thứ hai để kiểm thử. Nhấn Ctrl+C để dừng.
 
 Bài này không cần PostgreSQL, Composer hoặc framework.
 
@@ -24,7 +24,7 @@ bash lab.sh extend
 
 `test` kiểm tra phần mẫu; `extend` kiểm tra phần tự làm. Các vị trí TODO là nhiệm vụ cần hoàn thiện; không sửa test để bỏ qua lỗi.
 
-Kết quả mở rộng cần đạt: `TESTS=8 FAILED=0`. Có trang danh sách, bộ lọc theo từ khóa/loại/còn chỗ và Form đăng ký kiểm tra phía máy chủ. Dữ liệu đăng ký hợp lệ hiển thị ở mức xem trước, chưa lưu CSDL.
+Kết quả mở rộng cần đạt: `TESTS=7 FAILED=0`. Có luồng nhập, xem lại, sửa, hủy và hoàn tất mô phỏng; bản nháp sai hoặc hết hạn bị từ chối; các phiên sử dụng và tùy chọn giao diện tách biệt.
 
 ## Tệp nộp
 
