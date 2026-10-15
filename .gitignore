@@ -1,0 +1,10 @@
+# Environment & local files
+.local/
+*.tmp
+*.log
+
+# OS & IDE
+.vscode/
+.idea/
+Thumbs.db
+Desktop.ini
