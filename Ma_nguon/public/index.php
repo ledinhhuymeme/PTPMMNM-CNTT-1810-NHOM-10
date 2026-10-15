@@ -18,19 +18,11 @@
 <p>Phần mềm đăng ký tham dự sự kiện.</p>
 </div>
 </header>
-<main id="main" class="lab-intro-main">
-<div class="page-heading">
-<h2>Mã nguồn PHP đã chạy trên máy của bạn</h2>
-<p>Đây là trang mẫu được cấp để kiểm tra môi trường. Bài thực hành tập trung vào Shell Script, không phải mã PHP.</p>
-</div>
-<section class="env-info">
-<h3>Thông tin môi trường</h3>
-<ul>
-<li>PHP: <?php echo PHP_VERSION; ?></li>
-<li>Hệ điều hành: <?php echo PHP_OS; ?></li>
-<li>Thư mục gốc: <?php echo htmlspecialchars($_SERVER['DOCUMENT_ROOT'] ?? '(không xác định)'); ?></li>
-</ul>
-</section>
+<main id="main" tabindex="-1">
+<p class="intro-status">Mã nguồn PHP đã chạy trên máy của bạn.</p>
+<h2>Kiểm tra bài thực hành</h2>
+<p>Chạy script kiểm tra công cụ và tệp của dự án, sau đó hoàn thiện script quét mã PHP.</p>
+<p>Kết quả cần đối chiếu: thông báo từng tệp, tổng số tệp đạt/lỗi và mã thoát.</p>
 </main>
 </body>
 </html>

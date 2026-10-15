@@ -1,10 +1,6 @@
-# Environment & local files
-.local/
-*.tmp
+env.local.sh
+.env
 *.log
-
-# OS & IDE
-.vscode/
-.idea/
-Thumbs.db
-Desktop.ini
+.DS_Store
+runtime/
+evidence/private/

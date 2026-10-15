@@ -1,69 +1,43 @@
-# CommunityPass — Lab 01
+# Lab 01 — Vận hành dự án trên linux và viết shell script
 
-Ứng dụng đăng ký tham dự sự kiện. Mã nguồn dùng cho bài thực hành môn **Phát triển phần mềm mã nguồn mở**.
+Mã mẫu cho phần hướng dẫn và mã khởi đầu cho bài tự làm.
 
-## Chuẩn bị
+## Mở bài
 
-Sử dụng Ubuntu hoặc WSL. Cài đặt công cụ:
-
-```bash
-sudo apt update
-sudo apt install php-cli git unzip
-php -v
-git --version
-```
-
-PHP yêu cầu từ **8.1** trở lên.
-
-## Cách chạy
+Mở terminal Ubuntu/WSL tại thư mục chứa `lab.sh`. Dùng PHP từ 8.1 và Git. Hướng dẫn chi tiết, sơ đồ, đoạn mã cần sửa, dữ liệu đối chiếu và rubric nằm trong tài liệu của bài lab.
 
 ```bash
-cd Ma_nguon
-
-# Kiểm tra môi trường
 bash lab.sh check
-
-# Chạy máy chủ (giữ terminal mở)
 bash lab.sh run
 ```
 
-Mở trình duyệt tại: **http://127.0.0.1:8101**
+Mở http://127.0.0.1:8101. Giữ terminal máy chủ hoạt động; dùng terminal thứ hai để kiểm thử. Nhấn Ctrl+C để dừng.
 
-## Kiểm tra bài làm
+Bài này không cần PostgreSQL, Composer hoặc framework.
 
-Mở terminal thứ hai tại `Ma_nguon`, hoặc dừng máy chủ trước (Ctrl+C):
+## Kiểm tra bài
 
 ```bash
-# Kiểm tra phần mẫu (check-env.sh)
 bash lab.sh test
-
-# Kiểm tra phần mở rộng (scan-source.sh)
 bash lab.sh extend
 ```
 
-Kết quả mong đợi:
-- `test`: xuất `CHECK_ENV=PASS`, mã thoát 0
-- `extend`: xuất `SHELL_CASES=4 FAILED=0`, mã thoát 0
+`test` kiểm tra phần mẫu; `extend` kiểm tra phần tự làm. Các vị trí TODO là nhiệm vụ cần hoàn thiện; không sửa test để bỏ qua lỗi.
 
-## Cấu trúc thư mục
+Kết quả mở rộng cần đạt: `SHELL_CASES=4 FAILED=0`. Hoàn thành script kiểm tra môi trường và script quét mã PHP; xử lý được thư mục thiếu, thư mục rỗng, tệp sai cú pháp và đường dẫn có khoảng trắng.
 
-```
-Ma_nguon/
-├── lab.sh                  ← Script điều khiển chính
-├── public/
-│   ├── index.php           ← Trang mẫu CommunityPass
-│   └── assets/css/
-│       ├── tokens.css      ← Biến màu (Material 3)
-│       └── app.css         ← Giao diện ứng dụng
-├── scripts/
-│   ├── check-env.sh        ← [Phần mẫu] Kiểm tra môi trường
-│   └── scan-source.sh      ← [Bài tự làm] Quét tệp PHP
-├── tests/
-│   └── extension.sh        ← Kiểm tra bài mở rộng
-└── fixtures/               ← Dữ liệu kiểm tra
-    ├── broken.txt          ← PHP sai cú pháp
-    └── valid/
-        ├── a.php           ← PHP hợp lệ
-        └── sub folder/
-            └── b.php       ← PHP hợp lệ (tên thư mục có khoảng trắng)
-```
+## Tệp nộp
+
+Giữ mã nguồn, dữ liệu mẫu và kiểm thử. Ghi lại lệnh chạy trong README. Không đưa `.local`, mật khẩu hoặc dữ liệu cá nhân thật vào kho mã và gói nộp. Nộp đúng commit theo yêu cầu của bài; nếu dùng Actions, đính kèm lần chạy tương ứng.
+
+
+## Phần trình bày giao diện
+
+Lab này giữ CSS cục bộ tại `public/assets/css/app.css`. HTML nằm trong `public/`; các lab có nhiều trang dùng `templates/header.php` và `templates/footer.php`. Có thể lần từ các lớp `form-field`, `event-item`, `error-summary` sang CSS để đọc cách trình bày; Lab01 chỉ dùng phần trang giới thiệu.
+
+Các lớp, nhãn và bố cục chỉ phục vụ hiển thị. Giữ nguyên khối PHP, GET/POST, tên trường, giá trị option, hidden input và thuộc tính kiểm tra đầu vào khi thực hành. Không cần JavaScript, thư viện hoặc bước build mới để chạy giao diện.
+
+
+## Giao diện Material 3
+
+Màu và kiểu chữ nằm trong `public/assets/css/tokens.css`; bố cục trong `app.css`. Không có bước build hoặc thư viện mới.
